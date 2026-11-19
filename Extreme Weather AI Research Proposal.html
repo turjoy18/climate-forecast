@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Extreme Weather AI — Research Proposal, Rebuilt to Paper Standard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,700;0,6..72,800;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f5f0; --bg2:#ffffff; --ink:#13201e; --ink2:#3d4f4b; --muted:#6b7d79;
+    --line:#ddd8cc; --line2:#c9c2b2;
+    --teal:#0c6656; --teal-bg:#e3efec; --amber:#b94e08; --amber-bg:#fbeede;
+    --red:#9e2b1f; --red-bg:#f9e8e4; --navy:#162c3a; --navy-ink:#eaf2f5;
+    --card:#ffffff; --chip:#eef0ea; --shadow:0 1px 0 rgba(19,32,30,.06), 0 12px 32px rgba(19,32,30,.06);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1615; --bg2:#16201e; --ink:#e9efec; --ink2:#b9c8c3; --muted:#8fa39d;
+      --line:#2a3835; --line2:#3a4a46;
+      --teal:#4cc2ab; --teal-bg:#17302a; --amber:#f09a52; --amber-bg:#33200f;
+      --red:#f08a7a; --red-bg:#331a16; --navy:#0c1a24; --navy-ink:#eaf2f5;
+      --card:#17211f; --chip:#1e2c29; --shadow:0 1px 0 rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important} }
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:16px;line-height:1.65}
+  button,[role="button"],select,summary{ min-height:2.25rem }
+  a{color:var(--teal);text-underline-offset:3px}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+  /* Nav */
+  .topnav{position:sticky;top:0;z-index:20;background:color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .topnav-inner{display:flex;align-items:center;gap:18px;padding:10px 0;flex-wrap:wrap}
+  .topnav .brand{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);font-weight:600}
+  .topnav nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+  .topnav nav a{color:var(--ink2);text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 10px;border-radius:8px}
+  .topnav nav a:hover{background:var(--chip);color:var(--ink)}
+  /* Hero */
+  .hero{padding:52px 0 8px}
+  .statusline{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+  .pill{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.04em;padding:6px 10px;border:1px solid var(--line2);border-radius:999px;color:var(--ink2);background:var(--bg2)}
+  .pill strong{color:var(--ink)}
+  .pill.hot{border-color:var(--amber);color:var(--amber);background:var(--amber-bg);font-weight:600}
+  h1{font-family:"Newsreader",serif;font-weight:800;font-size:clamp(2.3rem,5.4vw,3.9rem);line-height:1.02;letter-spacing:-.015em;margin:0 0 18px;max-width:19ch}
+  h1 em{font-style:italic;font-weight:500;color:var(--teal)}
+  .lede{font-size:1.13rem;line-height:1.6;color:var(--ink2);max-width:68ch;margin:0 0 26px}
+  .lede strong{color:var(--ink)}
+  .hero-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin:8px 0 10px}
+  @media(max-width:820px){.hero-grid{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px}
+  .panel h3{margin:0 0 8px;font-size:13px;letter-spacing:.09em;text-transform:uppercase;font-family:"IBM Plex Mono",monospace;color:var(--muted);font-weight:600}
+  .panel p{margin:0;color:var(--ink2);font-size:15px}
+  .panel p+p{margin-top:10px}
+  .verdict{border-left:4px solid var(--amber)}
+  .verdict .big{font-family:"Newsreader",serif;font-size:1.35rem;line-height:1.3;color:var(--ink);font-weight:700;margin-bottom:8px}
+  /* Sections */
+  section{padding:44px 0 6px}
+  .sec-head{display:flex;gap:16px;align-items:baseline;border-top:2px solid var(--ink);padding-top:16px;margin-bottom:8px}
+  .sec-num{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--amber);font-weight:600;white-space:nowrap}
+  h2{font-family:"Newsreader",serif;font-size:clamp(1.6rem,3.4vw,2.15rem);font-weight:800;line-height:1.12;margin:0;letter-spacing:-.01em}
+  .sec-sub{color:var(--ink2);max-width:72ch;margin:10px 0 22px;font-size:15.5px}
+  h3.sub{font-family:"Newsreader",serif;font-size:1.25rem;font-weight:700;margin:28px 0 8px}
+  p{max-width:74ch}
+  .small{font-size:13.5px;color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted)}
+  .src a{color:var(--muted)}
+  /* Contrast table */
+  .contrast{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card);box-shadow:var(--shadow)}
+  @media(max-width:820px){.contrast{grid-template-columns:1fr}}
+  .contrast>div{padding:20px 22px}
+  .contrast .old{background:color-mix(in srgb, var(--red-bg) 55%, var(--card));border-right:1px solid var(--line)}
+  @media(max-width:820px){.contrast .old{border-right:none;border-bottom:1px solid var(--line)}}
+  .contrast h4{margin:0 0 12px;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+  .contrast .old h4{color:var(--red)} .contrast .new h4{color:var(--teal)}
+  .contrast ul{margin:0;padding-left:18px;color:var(--ink2);font-size:14.5px;display:grid;gap:7px}
+  .contrast .new ul{color:var(--ink)}
+  /* Finding cards */
+  .findings{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:900px){.findings{grid-template-columns:1fr}}
+  .finding{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .finding .k{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:8px}
+  .finding h4{font-family:"Newsreader",serif;font-size:1.15rem;margin:0 0 8px;line-height:1.25}
+  .finding p{font-size:14px;color:var(--ink2);margin:0}
+  .stat{font-family:"Newsreader",serif;font-size:2rem;font-weight:800;line-height:1;color:var(--ink)}
+  .stat span{font-size:1rem;color:var(--amber)}
+  /* Model table */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+  .fbtn{border:1px solid var(--line2);background:var(--bg2);color:var(--ink2);border-radius:999px;padding:8px 14px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+  .fbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .tablewrap{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  @media(max-width:760px){
+    .tablewrap{border:none;background:transparent;box-shadow:none}
+    table,thead,tbody,tr,td{display:block;width:100%}
+    thead{display:none}
+    #modelBody tr{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 4px;margin-bottom:10px;box-shadow:var(--shadow)}
+    #modelBody td{border-bottom:none;padding:7px 14px}
+    #modelBody td.mname{font-size:15.5px;padding-top:12px}
+    #modelBody td:nth-child(3)::before{content:"Good at — ";font-weight:600;color:var(--teal);font-size:12px;font-family:"IBM Plex Mono",monospace;text-transform:uppercase;letter-spacing:.05em}
+    #modelBody td:nth-child(4)::before{content:"Bad at — ";font-weight:600;color:var(--amber);font-size:12px;font-family:"IBM Plex Mono",monospace;text-transform:uppercase;letter-spacing:.05em}
+  }
+  th{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--muted);padding:12px 14px;border-bottom:2px solid var(--line);white-space:nowrap}
+  td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+  tr:last-child td{border-bottom:none}
+  td.mname{color:var(--ink);font-weight:600;white-space:nowrap}
+  td.mname .venue{display:block;font-weight:400;font-size:12.5px;color:var(--muted);white-space:normal}
+  .tag{display:inline-block;font-size:11px;font-family:"IBM Plex Mono",monospace;padding:2px 7px;border-radius:999px;background:var(--chip);color:var(--ink2);margin-top:4px}
+  .tag.warn{background:var(--amber-bg);color:var(--amber)}
+  .tag.good{background:var(--teal-bg);color:var(--teal)}
+  /* RQ */
+  .rqs{display:grid;gap:12px}
+  .rq{display:grid;grid-template-columns:64px 1fr;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+  @media(max-width:560px){.rq{grid-template-columns:1fr}}
+  .rq .n{font-family:"Newsreader",serif;font-size:1.7rem;font-weight:800;color:var(--teal);line-height:1}
+  .rq h4{margin:0 0 6px;font-size:16px}
+  .rq p{margin:0;font-size:14.5px;color:var(--ink2)}
+  .rq .falsify{margin-top:8px;font-size:13.5px;color:var(--amber);font-weight:500}
+  /* Work packages */
+  .wp-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .wp-panel{background:var(--navy);color:var(--navy-ink);border-radius:var(--radius);padding:26px 28px}
+  .wp-panel h4{font-family:"Newsreader",serif;font-size:1.45rem;margin:0 0 6px;color:#fff}
+  .wp-panel .meta{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.05em;color:#9fc3d4;text-transform:uppercase;margin-bottom:14px}
+  .wp-panel p{color:#cfdde3;max-width:70ch}
+  .wp-panel ul{color:#cfdde3;padding-left:18px;display:grid;gap:6px;max-width:70ch}
+  .wp-panel .kill{margin-top:16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:12px 14px;font-size:14px}
+  .wp-panel .kill strong{color:#f5b97f}
+  /* Pipeline diagram */
+  .pipe{display:flex;gap:0;flex-wrap:wrap;align-items:stretch;margin:18px 0}
+  .pipe .step{flex:1 1 150px;background:var(--card);border:1px solid var(--line);padding:14px;border-radius:10px;position:relative}
+  .pipe .step+.step{margin-left:22px}
+  .pipe .step+.step::before{content:"→";position:absolute;left:-19px;top:50%;transform:translateY(-50%);color:var(--amber);font-weight:700}
+  @media(max-width:820px){.pipe{flex-direction:column}.pipe .step+.step{margin-left:0;margin-top:22px}.pipe .step+.step::before{left:50%;top:-21px;transform:translateX(-50%) rotate(90deg)}}
+  .pipe .step b{display:block;font-size:14px;margin-bottom:4px}
+  .pipe .step span{font-size:13px;color:var(--ink2)}
+  .pipe .step .mono{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:.06em}
+  /* Metrics grid */
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:900px){.metrics{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.metrics{grid-template-columns:1fr}}
+  .metric{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:16px 18px}
+  .metric b{font-family:"IBM Plex Mono",monospace;font-size:14px}
+  .metric p{margin:6px 0 0;font-size:13.5px;color:var(--ink2)}
+  .barlist{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+  .barlist li{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .barlist .no{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--bg);background:var(--teal);border-radius:8px;width:28px;height:28px;display:grid;place-items:center;flex:none;font-size:13px}
+  .barlist b{font-size:15px}
+  .barlist p{margin:2px 0 0;font-size:14px;color:var(--ink2)}
+  /* Chart */
+  .chartbox{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px}
+  .chartbox h4{margin:0 0 4px;font-family:"Newsreader",serif;font-size:1.15rem}
+  .chartbox .sub{font-size:13.5px;color:var(--muted);margin:0 0 14px}
+  .bar-row{display:grid;grid-template-columns:170px 1fr 110px;gap:12px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+  .bar-row:last-of-type{border-bottom:none}
+  @media(max-width:640px){.bar-row{grid-template-columns:110px 1fr 84px;font-size:12.5px}}
+  .bar-track{height:16px;background:var(--chip);border-radius:5px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:5px;background:var(--muted)}
+  .bar-fill.no{background:var(--red)} .bar-fill.yes{background:var(--teal)} .bar-fill.mid{background:var(--amber)}
+  .bar-val{font-family:"IBM Plex Mono",monospace;font-size:12px;text-align:right;color:var(--ink2)}
+  /* Quantum */
+  .quantum{background:var(--red-bg);border:1px solid color-mix(in srgb, var(--red) 35%, var(--line));border-radius:var(--radius);padding:24px 26px}
+  .quantum h3{font-family:"Newsreader",serif;font-size:1.4rem;margin:0 0 8px;color:var(--ink)}
+  .quantum p,.quantum li{color:var(--ink2);font-size:15px}
+  .quantum ul{padding-left:18px;display:grid;gap:6px}
+  .quantum .honest{margin-top:14px;background:var(--card);border-radius:10px;padding:14px 16px;font-size:14.5px;color:var(--ink)}
+  /* Decisions */
+  .decisions{display:grid;gap:14px}
+  .decision{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+  .decision h4{margin:0 0 4px;font-size:15.5px}
+  .decision h4 .qn{font-family:"IBM Plex Mono",monospace;color:var(--amber);font-size:13px;margin-right:8px}
+  .decision .rec{font-size:13.5px;color:var(--teal);font-weight:600;margin:0 0 12px}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .opt{border:1px solid var(--line2);background:var(--bg);color:var(--ink2);border-radius:10px;padding:9px 13px;font:inherit;font-size:13.5px;cursor:pointer;text-align:left}
+  .opt:hover{border-color:var(--teal)}
+  .opt[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600}
+  @media (prefers-color-scheme: dark){ .opt[aria-pressed="true"]{color:#08110f} }
+  .dec-summary{display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:var(--teal-bg);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;margin-top:16px}
+  .dec-summary p{margin:0;font-size:14.5px}
+  .copybtn{background:var(--ink);color:var(--bg);border:none;border-radius:10px;padding:10px 16px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-left:auto}
+  /* Timeline */
+  .timeline{display:grid;gap:0;border-left:2px solid var(--line2);margin-left:8px}
+  .tl{position:relative;padding:0 0 22px 26px}
+  .tl::before{content:"";position:absolute;left:-7px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:3px solid var(--teal)}
+  .tl .when{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);font-weight:600}
+  .tl h4{margin:3px 0 4px;font-size:16px}
+  .tl p{margin:0;font-size:14.5px;color:var(--ink2);max-width:68ch}
+  /* Refs */
+  .refs{columns:2;column-gap:28px;font-size:13.5px;color:var(--ink2)}
+  @media(max-width:820px){.refs{columns:1}}
+  .refs li{margin-bottom:10px;break-inside:avoid}
+  .refs ol{padding-left:20px;margin:0}
+  footer{margin-top:56px;border-top:1px solid var(--line);padding:22px 0 44px;color:var(--muted);font-size:13.5px}
+  .callout{background:var(--amber-bg);border:1px solid color-mix(in srgb, var(--amber) 30%, var(--line));border-radius:var(--radius);padding:18px 20px;margin:18px 0}
+  .callout p{margin:0;font-size:14.5px;color:var(--ink2)}
+  .callout strong{color:var(--ink)}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:820px){.twocol{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="topnav"><div class="wrap topnav-inner">
+  <span class="brand">Research proposal · Rebuilt 20 Nov 2026</span>
+  <nav aria-label="Sections">
+    <a href="#thesis">Thesis</a><a href="#evidence">Evidence</a><a href="#models">Models</a><a href="#programme">Programme</a><a href="#evaluation">Evaluation</a><a href="#compute">Compute</a><a href="#quantum">Quantum</a><a href="#decisions">Decisions</a><a href="#timeline">Timeline</a>
+  </nav>
+</div></div>
+
+<header class="hero"><div class="wrap">
+  <div class="statusline">
+    <span class="pill"><strong>Original title:</strong> Predicting Extreme Weather Events Using AI-Powered Climate Modeling</span>
+    <span class="pill hot">Status: decisions locked 20 Nov 2026 · Consensus-backed</span>
+    <span class="pill">Hardware: 1 × RTX PRO 6000 Blackwell · 92 GB usable (96 GB spec)</span>
+  </div>
+  <h1>Forecast the tail, <em>not the mean.</em></h1>
+  <p class="lede">The submitted draft proposes an LSTM/CNN, a Flask API and a React Native app. That project would be obsolete on arrival: deterministic AI models already beat ECMWF IFS HRES on most <em>average</em> scores — and systematically fail exactly where this proposal claims to work, on record-breaking extremes and tropical-cyclone intensity. This rebuild is a <strong>novel-ML-method</strong> programme with climate as the stress domain: <strong>extremes-weighted + twCRPS LoRA / full fine-tune of Aurora on a Western Pacific crop, with IBTrACS-supervised intensity objectives and a secondary 0–6&nbsp;h heavy-rain arm — evaluated on WeatherBench&nbsp;2 + CSI/ETS/FSS/twCRPS/TC metrics against observations.</strong> No React Native app. No diffusion model trained from scratch. No quantum.</p>
+
+  <div class="hero-grid">
+    <div class="panel">
+      <h3>The proposed project, in one paragraph</h3>
+      <p><strong>Working title:</strong> <em>Tail-First Fine-Tuning: Extremes-Weighted LoRA Adaptation of Aurora for Western Pacific Tropical-Cyclone Intensity and Heavy Precipitation.</em></p>
+      <p>Domain: Western Pacific crop, 100–135°E, 5–40°N — HK / SE Asia. Core: 0–72&nbsp;h TC intensity (+ track as secondary) and heavy-precip exceedance. Secondary: 0–6&nbsp;h nowcasting / black-rainstorm (&gt;70&nbsp;mm/h) arm. Loss: extremes-weighted + quantile + twCRPS. Base: Aurora-Small (113M, full FT) and/or Aurora 1.3B (LoRA). Budget: ~5–20 GPU-days for the core result. Deliverable: arXiv draft + code/repro + evaluation notebooks.</p>
+    </div>
+    <div class="panel verdict">
+      <h3>The honest verdict on the draft</h3>
+      <div class="big">Kill the app. Keep the ambition.</div>
+      <p>The prototype app, usability testing and “which features matter?” question are undergraduate deliverables. No venue in 2026 publishes them. The scientific deliverable — a calibrated extremes forecast that beats HRES where HRES currently wins — is harder, smaller in scope, and worth a paper. Visualisation returns at the end, as the paper's figures and a decision-value analysis, not as a product.</p>
+    </div>
+  </div>
+</div></header>
+
+<main class="wrap">
+
+<!-- 1 THESIS -->
+<section id="thesis">
+  <div class="sec-head"><span class="sec-num">01</span><h2>What changed, and why</h2></div>
+  <p class="sec-sub">Every element of the original sections (a)–(e) is preserved in intent and replaced in substance. The mapping below is the proposal's first claim to seriousness: it shows the work was re-derived from the 2024–2026 literature, not re-worded.</p>
+  <div class="contrast">
+    <div class="old">
+      <h4>✕ &nbsp;Original draft</h4>
+      <ul>
+        <li>LSTM for time series + CNN for spatial data, trained from scratch</li>
+        <li>“Collect data from NOAA / NASA, extract temperature, humidity, pressure…”</li>
+        <li>Research question: “What features are most predictive?”</li>
+        <li>Deliverable: prototype app with localised alerts + usability testing</li>
+        <li>Evaluation: “test accuracy on historical data, cross-validate with existing models”</li>
+        <li>Stack: Pandas, Flask/FastAPI, React Native, Plotly</li>
+      </ul>
+    </div>
+    <div class="new">
+      <h4>✓ &nbsp;This proposal</h4>
+      <ul>
+        <li>Fine-tune a released foundation model (Aurora / Aurora-Small) with LoRA — never pretrain</li>
+        <li>ERA5 + IFS analysis initial conditions, verified against IBTrACS, IMERG and Hong Kong Observatory gauges</li>
+        <li>Research questions with falsification conditions (§4)</li>
+        <li>Deliverable: arXiv draft + reproducible code/weights + evaluation dashboard/notebooks (app killed)</li>
+        <li>Evaluation: WeatherBench 2 protocol + binary-extremes extension + HR-Extreme, on a held-out year, with significance testing</li>
+        <li>Stack: PyTorch, Anemoi/Zarr data pipeline, gradient checkpointing + 8-bit AdamW on one Blackwell GPU</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 2 EVIDENCE -->
+<section id="evidence">
+  <div class="sec-head"><span class="sec-num">02</span><h2>The evidence: AI wins the mean, loses the tail</h2></div>
+  <p class="sec-sub">Three findings define the problem. Together they are the introduction of the paper — and the reason “another deterministic model” is not a contribution.</p>
+  <div class="findings">
+    <article class="finding">
+      <div class="k">Finding 1 · Record-breaking events</div>
+      <div class="stat">~249,000 <span>records, 2020</span></div>
+      <h4>HRES beats the AI models on records</h4>
+      <p>Zhang, Fischer, Zscheischler &amp; Engelke (<em>Science Advances</em>, 2026; doi:10.1126/sciadv.aec1433) show HRES still consistently outperforms GraphCast, Pangu-Weather and FuXi on record-breaking heat, cold and wind across nearly all lead times: AI models under-estimate frequency and intensity, with growing error for larger record exceedance. On ordinary cases, AI wins. <em>Exact event counts: confirm from the journal PDF before citing a number.</em></p>
+    </article>
+    <article class="finding">
+      <div class="k">Finding 2 · Gray-swan cyclones</div>
+      <div class="stat">980 <span>vs 960 hPa</span></div>
+      <h4>Unseen intensity is not learned from the mean</h4>
+      <p>Sun et al. (<em>PNAS</em>, May 2025) retrained FourCastNet with all Category 3–5 cyclones (1979–2015) removed. Tested on 20 Category-5 storms (2018–23), it failed to forecast intensification — Hurricane Lee's minimum pressure never fell below 980&nbsp;hPa against a 960&nbsp;hPa reference — and its wind/pressure fields violate gradient-wind balance. Mean-RMSE tuning cannot fix unseen-tail physics.</p>
+    </article>
+    <article class="finding">
+      <div class="k">Finding 3 · Precipitation smoothing</div>
+      <div class="stat">20–35% <span>under-forecast</span></div>
+      <h4>MSE training shrinks the peaks it should predict</h4>
+      <p>Deterministic MSE-trained models underestimate 99th-percentile precipitation by roughly 20–35% (range as reported in secondary summaries of Hamill et al., <em>GRL</em> 2024, and others — attribute as a reported range, not a directly verified figure). In Bangladesh (2023–24, 43 stations), GraphCast's extreme-rain CSI was only 0.45–0.52 with false-alarm ratio 0.48–0.55 at 100–300&nbsp;mm, despite routine-rain POD above 0.98.</p>
+    </article>
+  </div>
+  <div class="callout"><p><strong>The scale trap.</strong> Loveday &amp; Hertneky (<em>Geosci. Model Dev.</em>, 2026; 973 initialisations, CONUS gauges) show the winner on precipitation depends on scale: smooth AI forecasts win point-scale threshold-weighted CRPS, while the 3&nbsp;km HRRR wins at neighbourhood scale, especially at 6&nbsp;h and the 99.9th percentile. <strong>Any extremes claim that reports only point RMSE has chosen the metric that flatters it.</strong> This proposal reports neighbourhood scores (FSS) as primary.</p></div>
+</section>
+
+<!-- 3 MODELS -->
+<section id="models">
+  <div class="sec-head"><span class="sec-num">03</span><h2>The field, 2024–2026</h2></div>
+  <p class="sec-sub">The bar moved from “deterministic model beats IFS on mean RMSE” to “probabilistic generative ensemble and foundation-model fine-tuning.” Headline percentages below are the developers' own benchmark numbers unless stated — treat vendor claims accordingly.</p>
+  <div class="filters" role="group" aria-label="Filter models">
+    <button class="fbtn" data-filter="all" aria-pressed="true">All models</button>
+    <button class="fbtn" data-filter="det" aria-pressed="false">Deterministic</button>
+    <button class="fbtn" data-filter="prob" aria-pressed="false">Probabilistic / ensemble</button>
+    <button class="fbtn" data-filter="found" aria-pressed="false">Foundation / hybrid</button>
+  </div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Model</th><th>What it is</th><th>Good at</th><th>Bad at — on extremes</th></tr></thead>
+    <tbody id="modelBody">
+      <tr data-kind="det"><td class="mname">GraphCast<span class="venue">Google DeepMind · Science, 2023</span></td><td>GNN, icosahedral mesh, 0.25°, 6&nbsp;h step<span class="tag">Deterministic</span></td><td>Beat IFS HRES on 90% of 1,380 WeatherBench 2 targets; strong TC track</td><td>Smooths peaks; weak &lt;24&nbsp;h, surface and precipitation; loses to HRES on records</td></tr>
+      <tr data-kind="det"><td class="mname">Pangu-Weather<span class="venue">Huawei · Nature, 2023</span></td><td>3D Earth-Specific Transformer, 0.25°<span class="tag">Deterministic</span></td><td>First to beat IFS on most upper-air fields; strong TC track</td><td>Same MSE smoothing; TC intensity inferior to HRES; skill falls near surface</td></tr>
+      <tr data-kind="prob"><td class="mname">GenCast<span class="venue">Google DeepMind · Nature, Dec 2024</span></td><td>Conditional diffusion ensemble, 0.25°, 15&nbsp;d<span class="tag good">Probabilistic</span></td><td>Beat ECMWF ENS on 97.2% of 1,320 targets; CRPS ~15% lower; first AI ensemble to beat ENS</td><td>Slow sampling vs newer FGN models; record-event (out-of-distribution) skill not tested in the original paper</td></tr>
+      <tr data-kind="prob"><td class="mname">FourCastNet 3<span class="venue">NVIDIA · arXiv:2507.12144, Jul 2025</span></td><td>Spherical neural operator, CRPS loss in space + spectral domain<span class="tag good">Probabilistic</span></td><td>Beats IFS-ENS, rivals GenCast; calibrated; 15-day forecast in ~60&nbsp;s on 1 × H100</td><td>Training used up to 1,024 GPUs — inference is single-GPU, training is not</td></tr>
+      <tr data-kind="found"><td class="mname">Aurora<span class="venue">Microsoft · Nature, 21 May 2025</span></td><td>1.3B-param foundation model, pretrained on &gt;1M hours of geophysical data<span class="tag good">This proposal's base</span></td><td>Beats HRES on 92% of targets at 0.1°; TC track beat 7 operational centres (2022–23); designed for LoRA fine-tuning</td><td>Original is deterministic — no ensemble / uncertainty; reliability degrades on rare, out-of-distribution extremes</td></tr>
+      <tr data-kind="found"><td class="mname">Aurora 1.5<span class="venue">Microsoft · preprint, 9 Jul 2026</span></td><td>Aurora + CRPS-trained ensemble, hourly leads<span class="tag warn">Preprint — claim only</span></td><td>Vendor claim: beats ENS on 88.9% of targets; top-5% heatwave MAE −58%</td><td>Not peer-reviewed, not independently replicated — do not cite as settled</td></tr>
+      <tr data-kind="prob"><td class="mname">AIFS / AIFS-ENS<span class="venue">ECMWF · operational Feb / Jul 2025</span></td><td>Graph transformer; ENS is a 51-member CRPS ensemble<span class="tag good">Probabilistic · Operational</span></td><td>First operational open ML weather model; TC track gains up to ~20%</td><td>Model card lists blurred long-lead fields and reduced intensity of some TCs</td></tr>
+      <tr data-kind="prob"><td class="mname">FuXi-Extreme / FuXi-TC<span class="venue">Fudan · Sci. China Earth Sci. 2024; npj Clim. Atmos. Sci. 2026</span></td><td>Diffusion (DDPM) refiner / generative TC intensity framework<span class="tag warn">Related work — not our core</span></td><td>FuXi-TC (WNP 2024) matches ECMWF deterministic intensity skill with better precip; zero-shot to North Atlantic</td><td>Diffusion-from-scratch / NWP-conditioned generative path — adjacent SOTA we cite and must beat on intensity <em>without</em> training a global diffusion model</td></tr>
+      <tr data-kind="det"><td class="mname">Stormer<span class="venue">UCLA / Argonne · NeurIPS 2024</span></td><td>Plain ViT, randomised-dynamics training objective<span class="tag">Best solo-reproducible baseline</span></td><td>Competitive beyond 7 days with orders-of-magnitude less data and compute; clean ablations</td><td>Not an extremes specialist; deterministic loss family, so same tail bias unless re-weighted</td></tr>
+      <tr data-kind="found"><td class="mname">NeuralGCM<span class="venue">Google / ECMWF · Nature, Jul 2024</span></td><td>Hybrid: differentiable dynamical core + learned physics<span class="tag">Inspiration, not a baseline</span></td><td>Only model competitive on deterministic, ensemble <em>and</em> multi-decade climate runs; preserves physical consistency</td><td>Trained on 256 × TPUv4 for 21 days; ~⅓ of 30-year runs destabilise (secondary analysis) — not reproducible solo</td></tr>
+      <tr data-kind="found"><td class="mname">ClimaX<span class="venue">Microsoft / UCLA · ICML 2023</span></td><td>ViT foundation model pretrained on CMIP6<span class="tag">Paradigm paper</span></td><td>Proved one pretrained model can fine-tune across forecasting, projection and downscaling</td><td>Pretrained at 5.625° on simulations — not competitive on 0.25° medium-range skill; superseded by Aurora</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src">Full model-by-model sourcing in the research report behind this proposal (researched 19–20 Nov 2026). WeatherNext 2 (Google, 17 Nov 2025) claims 99.9% improvement over WeatherNext 1 and ~8× GenCast speed — a vendor claim at announcement, not peer-reviewed; WeatherNext 3 (Sep 2026) is a preprint. Neither is used as a baseline here.</p>
+</section>
+
+<!-- 4 PROGRAMME -->
+<section id="programme">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Research questions &amp; programme</h2></div>
+  <p class="sec-sub">The draft's three questions — which features matter, can deep learning beat traditional models, how to visualise for non-experts — are unanswerable as posed (the first is a feature-importance exercise, the second was settled in 2023, the third is not a research question). They are replaced by three questions that can fail.</p>
+
+  <div class="rqs">
+    <div class="rq"><div class="n">RQ1</div><div>
+      <h4>Can extremes-weighted LoRA adaptation recover tail skill that the foundation model lost to mean training?</h4>
+      <p>Fine-tune Aurora (LoRA on backbone self-attention, the recipe in the <em>Nature</em> supplement §D.4) and Aurora-Small (full fine-tune, 113M params) on extreme-subsampled Western Pacific cases with an extremes-weighted + quantile loss. Measure record-exceedance error, CSI/ETS and threshold-weighted CRPS against the frozen base model.</p>
+      <p class="falsify">Falsified if: tail metrics do not improve over frozen Aurora <em>and</em> frozen+Gomez at matched body metrics (mean RMSE / unweighted CRPS), or improve only by degrading calibration. Always report body + tail (Wessel body–tail trade-off).</p>
+    </div></div>
+    <div class="rq"><div class="n">RQ2</div><div>
+      <h4>Can IBTrACS-supervised intensity objectives close the TC intensity gap without training a diffusion model from scratch?</h4>
+      <p>Track is largely solved by Aurora / GenCast; intensity is the known failure mode (reanalysis-smoothed extrema, MSE attenuation). Add multi-task intensity heads and/or tracking-independent postprocessing (Gomez et al., <em>AIES</em> 2026) on Aurora fields, trained against IBTrACS max wind / min pressure over held-out WNP seasons — and report against HRES and FuXi-TC as the generative upper bar we are <em>not</em> reproducing.</p>
+      <p class="falsify">Falsified if: intensity error does not move toward HRES on held-out storms at matched track error <em>after</em> the frozen-Aurora + Gomez-head control, or gains come only from memorising storm IDs. Gomez used Pangu/FourCastNet — Aurora transfer is itself a test.</p>
+    </div></div>
+    <div class="rq"><div class="n">RQ3</div><div>
+      <h4>Is a LoRA-ensemble calibrated where it matters — and worth anything to a decision-maker?</h4>
+      <p>Build a 10–50 member ensemble via LoRA diversity / IC perturbation / MC-dropout-class methods (<strong>not</strong> diffusion sampling as the core — that is stretch-only). Report rank histograms, spread–skill and reliability as primary results, plus Relative Economic Value across cost/loss ratios — the metric GenCast uses to connect skill to use.</p>
+      <p class="falsify">Falsified if: spread–skill deviates materially from 1 on extremes thresholds after CRPS/twCRPS fine-tuning and temperature scaling.</p>
+    </div></div>
+  </div>
+
+  <h3 class="sub">Work packages</h3>
+  <div class="wp-tabs" role="group" aria-label="Work packages">
+    <button class="fbtn wpbtn" data-wp="0" aria-pressed="true">WP1 · LoRA extremes adaptation</button>
+    <button class="fbtn wpbtn" data-wp="1" aria-pressed="false">WP2 · Intensity + heavy-rain arm</button>
+    <button class="fbtn wpbtn" data-wp="2" aria-pressed="false">WP3 · Losses, calibration &amp; stretch</button>
+  </div>
+  <div class="wp-panel" id="wpPanel" aria-live="polite"></div>
+
+  <h3 class="sub">Pipeline</h3>
+  <div class="pipe">
+    <div class="step"><span class="mono">Data</span><b>ERA5 + IFS analysis</b><span>Anemoi 1° Zarr (~0.5 TB, 1979–2023) to start; 0.25° Western Pacific crop. Start the CDS download first — it is rate-limited and is the hidden bottleneck.</span></div>
+    <div class="step"><span class="mono">Adapt</span><b>Frozen backbone + LoRA</b><span>Rank-60 LoRA precedent: FlowDA fine-tunes Aurora with 37M tunable params (arXiv:2602.06800, 2026). Extremes-subsampled training cases.</span></div>
+    <div class="step"><span class="mono">Intensity</span><b>IBTrACS-supervised head</b><span>Multi-task / postprocess intensity + heavy-rain exceedance. FuXi-TC is related SOTA (generative) — we cite it, we do not retrain a diffusion from scratch.</span></div>
+    <div class="step"><span class="mono">Verify</span><b>Against observations</b><span>IBTrACS for cyclones, IMERG + HKO gauges for rain. ERA5-only verification is partly circular — ERA5 is itself IFS-derived and underestimates extreme precipitation.</span></div>
+  </div>
+  <p class="small">Regional precedent in Hong Kong: an HKUST diffusion model trained on FengYun-4A satellite data (2018–21) reportedly extends thunderstorm / sudden-rainfall warning from 2&nbsp;h to 4&nbsp;h with +15% accuracy at 48&nbsp;km scale (<em>PNAS</em>, Dec 2025, as reported Jan 2026; now being tested by CMA and the Hong Kong Observatory). <strong>The primary PNAS text was not verified in the underlying research — confirm the DOI before citing it in a submission.</strong> HKO issued four black-rainstorm warnings in eight days in summer 2025; the &gt;70&nbsp;mm/h, 0–4&nbsp;h nowcasting problem is live, local, and unsolved.</p>
+</section>
+
+<!-- 5 EVALUATION -->
+<section id="evaluation">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Evaluation: the baseline bar</h2></div>
+  <p class="sec-sub">WeatherBench 2 (Rasp et al., <em>JAMES</em> 2024) is the protocol floor — 2020 evaluation year, 00/12&nbsp;UTC initialisations, ERA5 truth, HRES deterministic and ENS probabilistic baselines — but its core protocol contains <strong>no</strong> CSI, ETS, FSS, threshold or cyclone metrics. An extremes paper must add them, plus the Zhao et al. binary-extremes extension (<em>Geosci. Model Dev.</em> 18:5781–5799, 2025; ROC skill score recommended as rarity-insensitive) and, for km-scale claims, HR-Extreme (ICLR 2025, from NOAA HRRR 3&nbsp;km data), where SOTA models' extreme-case errors are significantly larger than their overall errors.</p>
+
+  <div class="metrics">
+    <div class="metric"><b>CSI / ETS · POD / FAR</b><p>Binary exceedance at multiple thresholds (e.g. rain &gt;50 / 100&nbsp;mm, T &gt;95th percentile). CSI collapses for rare events — always pair with ETS / ROCSS.</p></div>
+    <div class="metric"><b>FSS (neighbourhood)</b><p>Fractions Skill Score at several neighbourhood sizes. Essential for convective rain — the double-penalty problem punishes sharp, slightly displaced forecasts.</p></div>
+    <div class="metric"><b>twCRPS (+ body)</b><p>Threshold-weighted CRPS for the tail. Wessel et al. (<em>MWR</em> 2025): twCRPS training improves extremes but can worsen the body — always report unweighted CRPS / mean RMSE alongside, and mitigate with weighted training or linear pooling.</p></div>
+    <div class="metric"><b>Quantile / pinball score</b><p>Error at the 90th / 95th / 99th percentiles, reported per quantile — the direct antidote to MSE's regression to the mean. Never collapse to one weighted number.</p></div>
+    <div class="metric"><b>TC track + intensity</b><p>Track error (km), minimum-pressure and maximum-wind error, rapid-intensification detection — against IBTrACS, not ERA5.</p></div>
+    <div class="metric"><b>Calibration + REV</b><p>Rank histogram, spread–skill ratio (≈1 = calibrated), reliability diagrams, and Relative Economic Value over cost/loss ratios. An uncalibrated ensemble is not a result.</p></div>
+  </div>
+
+  <h3 class="sub">A credible paper must beat all five, on the same protocol</h3>
+  <ul class="barlist">
+    <li><span class="no">1</span><div><b>Persistence and climatology</b><p>Trivial, but required — many “AI beats NWP” extremes claims never show it.</p></div></li>
+    <li><span class="no">2</span><div><b>IFS HRES (deterministic)</b><p>For extremes, HRES is currently the model to beat (Finding 1). Beating it on mean RMSE is not sufficient.</p></div></li>
+    <li><span class="no">3</span><div><b>IFS ENS / AIFS-ENS (probabilistic)</b><p>The CRPS bar GenCast set: better than ENS on 97.2% of 1,320 targets.</p></div></li>
+    <li><span class="no">4</span><div><b>A released AI model on the same task</b><p>GraphCast (deterministic), GenCast or AIFS-ENS (probabilistic), Aurora (foundation); FuXi-Extreme / StormCast / HRRR for the regional arm.</p></div></li>
+    <li><span class="no">5</span><div><b>Observations, held-out year, significance</b><p>Stations / IMERG / IBTrACS verification, a test year the model never trained on, paired tests or bootstrap — not a single case study. Storm Ciarán and Hurricane Lee are illustrations, not proof.</p></div></li>
+  </ul>
+
+  <div class="callout"><p><strong>Stretch goal — compound extremes (WP3, high risk / high reward).</strong> There is <strong>no standard compound-event benchmark for ML weather models as of 2026</strong>: no baseline, no agreed metric. That absence is the opportunity. A tractable first definition: joint exceedance of temperature and precipitation above their 95th percentiles in the same 3-day window, or cyclone rain falling on antecedently saturated catchments, evaluated with joint Brier score and multivariate CRPS (energy score). Definitions follow Tang et al. (2025, China compound review) and Raymond et al. (<em>Nat. Rev. Earth Environ.</em>, 2026). Do not claim to “solve” compounds with a univariate model.</p></div>
+</section>
+
+<!-- 6 COMPUTE -->
+<section id="compute">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Compute honesty: one GPU, used correctly</h2></div>
+  <p class="sec-sub">The workstation is an RTX PRO 6000 Blackwell — 96&nbsp;GB GDDR7 ECC, 1,792&nbsp;GB/s, 24,064 CUDA cores, no NVLink (the “92&nbsp;GB” figure is best read as usable capacity; confirm with <span style="font-family:'IBM Plex Mono',monospace;font-size:.92em">nvidia-smi</span> on the actual machine). That is roughly H100-class inference and a fine-tuning card — not a pretraining cluster. The table below is the proposal's feasibility proof.</p>
+
+  <div class="chartbox">
+    <h4>Reported training compute, in GPU-days (log scale)</h4>
+    <p class="sub">Solo-feasible means roughly ≤ 20 GPU-days on one card with time left to iterate, ablate and write. Inference for every model listed is single-GPU feasible.</p>
+    <div id="computeChart"></div>
+    <p class="src" style="margin-top:12px">Sources: IJCAI-26 survey training table; FourCastNet 3 (arXiv:2507.12144); Aurora <em>Nature</em> supplement; Otter Weather, OpenReview (ICLR 2026, under review). At one GPU, GraphCast-scale training is ~2–3 years of wall-clock; even FuXi-scale (64 A100-days) is ~2 months of perfect utilisation before any hyperparameter search.</p>
+  </div>
+
+  <div class="twocol" style="margin-top:14px">
+    <div class="panel">
+      <h3>What fits in 92 GB</h3>
+      <p><strong>Aurora-Small (113M):</strong> full fine-tune at 0.25°, multi-step rollout — easily. <strong>Aurora 1.3B:</strong> LoRA + gradient checkpointing + bf16 at 0.25° — yes; a single full-model step at 0.1° already needs ~80&nbsp;GB on an A100, so 0.1° multi-step rollout is marginal without offloading. Use 8-bit AdamW / Adafactor and accumulation. <strong>Stretch only (not core):</strong> a small regional generative/CorrDiff refiner on the crop if LoRA + Gomez heads fail the intensity gate — days to ~2 weeks. Do not train a global diffusion model.</p>
+    </div>
+    <div class="panel">
+      <h3>The recommended configuration</h3>
+      <p>Base: Aurora-Small (full FT) and/or Aurora 1.3B (LoRA). Domain: 100–135°E, 5–40°N. Task: 0–72&nbsp;h TC intensity (+ track) and heavy-precip exceedance; 0–6&nbsp;h secondary arm. Loss: extremes-weighted + quantile + twCRPS. No from-scratch global model, no from-scratch diffusion. Data: cropped Zarr / Anemoi stream. <strong>Quoted budget: ~5–20 GPU-days for the core result — not 500+.</strong></p>
+    </div>
+  </div>
+  <p class="small" style="margin-top:12px">Physics, honestly scoped: extremes-weighted, quantile, CRPS and spectral losses are cheap and demonstrated. Soft constraints (gradient-wind balance, water balance, motion-regularised advection) are credible. A hard PINN with PDE-residual loss on the full atmosphere has not worked at global scale — do not propose one. NeuralGCM's differentiable-core hybrid is the credible physics route, and it is cluster-scale: cite it as inspiration, not as a plan.</p>
+</section>
+
+<!-- 7 QUANTUM -->
+<section id="quantum">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Quantum: the blunt section</h2></div>
+  <p class="sec-sub">The brief invited “very advanced machine learning and quantum computing stuff.” The research answer, applied to this project, is no — and a proposal that says so, with reasons, is stronger than one that bolts quantum on.</p>
+  <div class="quantum">
+    <h3>Verdict: mostly bolted-on. Zero operational use. Not the core of this thesis.</h3>
+    <p>As of 23 Oct 2026, <strong>zero operational weather forecasts run on a quantum computer anywhere</strong>, under Rosetta Quantum's three criteria (operational schedule, quantum processor in the loop, publicly documented). Tennie &amp; Palmer (Oxford, <em>BAMS</em> 2023) give the structural reasons:</p>
+    <ul>
+      <li><strong>Readout bottleneck:</strong> a 10⁹-variable atmospheric state fits in ~30 qubits, but measurement returns ~1 bit per qubit — a forecast centre needs the whole field back, every cycle. They call this insurmountable for operational centres.</li>
+      <li><strong>Nonlinearity:</strong> the Schrödinger equation is linear; the atmosphere is not, and chaotic systems may need exponentially many copies to track.</li>
+      <li><strong>Scale:</strong> inverting one forecast-scale linear system was estimated at ~10²⁹ gates (Scherer et al., 2017). No published shortcut has removed this as of Oct 2026.</li>
+    </ul>
+    <p>What exists in 2024–2026 is toy-scale: QNN demos on single variables, simulator-only, with no IFS / GraphCast / Aurora comparison and no extremes evaluation (e.g. arXiv:2509.01422). Ueno &amp; Miura's quantum stochastic-parameterisation algorithm needed ~4× <em>more</em> samples than classical Monte Carlo for the same result, on a simulator. The CERN Open Quantum Institute weather pilot is at “Phase 2 — Full Proposal”: no runs, no results.</p>
+    <div class="honest"><strong>The only honest quantum-adjacent option:</strong> treat tensor networks as what they are — a classical compression method — and benchmark them against a classical baseline on one small, well-defined subgrid task (cloud cover or radiation parameterisation), prepared for a negative result. Or run a QNN as a negative control. Do not claim quantum advantage, and do not spend Blackwell hours simulating a global quantum forecast. Your existing quantum portfolio (circuit scheduling, ML entanglement detection, fair entanglement routing) already proves quantum competence; this paper proves scientific judgement by <em>not</em> forcing it.</div>
+  </div>
+</section>
+
+<!-- 8 DECISIONS -->
+<section id="decisions">
+  <div class="sec-head"><span class="sec-num">08</span><h2>Decision log: the eight grill questions</h2></div>
+  <p class="sec-sub">Your answers (20 Nov 2026) are locked as defaults below. Change only if the programme must pivot; selections stay on this page for copying into notes.</p>
+  <div class="decisions" id="decisions"></div>
+  <div class="dec-summary">
+    <p id="decCount"><strong>8 of 8</strong> set to the recommended defaults.</p>
+    <button class="copybtn" id="copyDecisions" type="button">Copy my decisions</button>
+    <span id="copyMsg" class="small" role="status"></span>
+  </div>
+</section>
+
+<!-- 9 TIMELINE -->
+<section id="timeline">
+  <div class="sec-head"><span class="sec-num">09</span><h2>Milestones &amp; deliverables</h2></div>
+  <p class="sec-sub">Replacing the draft's deliverables (trained model, app, dataset, report) with the set a venue actually accepts. Durations are GPU-time-informed estimates for one researcher, not commitments.</p>
+  <div class="timeline">
+    <div class="tl"><span class="when">Phase 0 · Weeks 1–3</span><h4>Harness → frozen baselines → Gomez floor</h4><p>ERA5/Anemoi day one. Reproduce frozen Aurora + HRES (and GraphCast if available) on the W Pacific crop. Then fit a <strong>linear</strong> Gomez-style intensity head on <strong>frozen</strong> Aurora — the cheap floor and attribution control. <em>Gate: baselines + frozen+Gomez reproduce before any LoRA.</em></p></div>
+    <div class="tl"><span class="when">Phase 1 · Weeks 3–8</span><h4>WP1 — LoRA extremes adaptation (RQ1)</h4><p>Aurora-Small FT and Aurora-1.3B LoRA vs frozen and frozen+Gomez. Extremes-weighted + quantile + twCRPS; always report body + tail (Wessel). Ablations: loss on/off, LoRA rank, subsample rate.</p></div>
+    <div class="tl"><span class="when">Phase 2 · Weeks 8–14</span><h4>WP2 — Intensity + heavy-rain arm (RQ2)</h4><p>Escalate Gomez head only if linear floor is insufficient; HKO/IMERG black-rainstorm arm. Optional generative/CorrDiff <strong>stretch only</strong> if intensity gate fails after LoRA + heads.</p></div>
+    <div class="tl"><span class="when">Phase 3 · Weeks 14–18</span><h4>WP3 — Calibration, value, stretch (RQ3)</h4><p>LoRA-ensemble (not diffusion sampling as core); rank histograms, spread–skill, REV; compound pilot only if Phases 1–2 hold.</p></div>
+    <div class="tl"><span class="when">Deliverables</span><h4>What ships</h4><p>(1) Adapted model weights + training code; (2) WeatherBench&nbsp;2 + extremes evaluation harness and curated W Pacific extremes subset; (3) evaluation dashboard / notebooks (not a product app); (4) arXiv draft, then NeurIPS/ICLR AI-for-Earth workshop → <em>JAMES</em> / <em>GMD</em> / AMS AI journal. Solo PoW first, mentor later. No React Native, no usability study, no Nature Communications as a first shot.</p></div>
+  </div>
+
+  <div class="callout"><p><strong>Open questions carried honestly.</strong> Zhang et al. (<em>Science Advances</em> 2026) and FuXi-TC (<em>npj</em> 2026) are Consensus-verified for the directional claims (HRES wins records; intensity is the AI gap). Exact event counts and the 20–35% precip under-forecast figure still need primary-PDF numbers before submission. Aurora 1.5 / WeatherNext remain vendor/preprint. Otter Weather is under review — verify code before building on it. HKUST <em>PNAS</em> diffusion DOI still unconfirmed. None of these gaps changes the locked programme.</p></div>
+</section>
+
+<!-- REFS -->
+<section id="refs">
+  <div class="sec-head"><span class="sec-num">10</span><h2>Key sources</h2></div>
+  <p class="sec-sub">From the underlying SOTA research report (19–20 Nov 2026). Vendor and preprint claims are labelled as such wherever they are used above.</p>
+  <div class="refs"><ol>
+    <li>Bodnar et al. — Aurora, <em>Nature</em>, 21 May 2025. doi:10.1038/s41586-025-09005-y (incl. supplement §D.4, LoRA rollout fine-tuning).</li>
+    <li>Price et al. — GenCast, <em>Nature</em>, 4 Dec 2024.</li>
+    <li>Lam et al. — GraphCast, <em>Science</em>, Nov 2023.</li>
+    <li>Bi et al. — Pangu-Weather, <em>Nature</em>, Jul 2023.</li>
+    <li>Bonev et al. — FourCastNet 3, arXiv:2507.12144, Jul 2025. <a href="https://arxiv.org/pdf/2507.12144">arxiv.org/pdf/2507.12144</a></li>
+    <li>Rasp et al. — WeatherBench 2, <em>JAMES</em> 2024 (arXiv:2308.15560). Docs: <a href="https://weatherbench2.readthedocs.io/en/latest/api.html">weatherbench2.readthedocs.io</a></li>
+    <li>Zhao et al. — Binary-extremes extension, <em>Geosci. Model Dev.</em> 18:5781–5799, 2025.</li>
+    <li>Zhang, Fischer, Zscheischler &amp; Engelke — Record-breaking extremes, <em>Science Advances</em>, 2026. doi:10.1126/sciadv.aec1433 (Consensus-verified).</li>
+    <li>Sun et al. — Gray-swan tropical cyclones, <em>PNAS</em>, 2025. doi:10.1073/pnas.2420914122.</li>
+    <li>Huang et al. — Aurora extremes predictability (pattern–amplitude divergence), <em>Atmosphere</em>, 2026. doi:10.3390/atmos17080716.</li>
+    <li>Sahu, Sandeep &amp; Kodamana — MLWP TC dynamics/thermodynamics (intensity low-bias), <em>JGR: Machine Learning and Computation</em>, 2025.</li>
+    <li>Gomez et al. — Global TC intensity via NeWM postprocessing, <em>Artif. Intell. Earth Syst.</em>, 2026. doi:10.1175/AIES-D-25-0073.1.</li>
+    <li>Wessel et al. — Training postprocessing with twCRPS for extremes, <em>Mon. Wea. Rev.</em>, 2025.</li>
+    <li>Kochkov et al. — NeuralGCM, <em>Nature</em> 632:1060–1066, 2024.</li>
+    <li>Nguyen et al. — Stormer, NeurIPS 2024 (arXiv:2312.03876); ClimaX, ICML 2023.</li>
+    <li>Zhong et al. — FuXi-Extreme, <em>Sci. China Earth Sci.</em> 67:3696–3708, 2024; Guo et al. — FuXi-TC, <em>npj Clim. Atmos. Sci.</em>, 2026. doi:10.1038/s41612-026-01501-w (related generative SOTA — not our method).</li>
+    <li>Pathak et al. — StormCast, arXiv:2408.10958, Aug 2024.</li>
+    <li>HR-Extreme dataset, ICLR 2025.</li>
+    <li>FlowDA (Aurora LoRA data assimilation), arXiv:2602.06800, 2026.</li>
+    <li>Tennie &amp; Palmer — Quantum computers for weather and climate, <em>BAMS</em> 104(2):488–500, 2023 (arXiv:2210.17460).</li>
+    <li>Rosetta Quantum — “Is quantum useful for weather and climate forecasting?”, 23 Oct 2026. <a href="https://rosettaquantum.com/blog/is-quantum-useful-for-weather-and-climate-forecasting-en/">rosettaquantum.com</a></li>
+    <li>Loveday &amp; Hertneky — Scale-dependent precipitation verification, <em>Geosci. Model Dev.</em>, 2026.</li>
+    <li>Tang et al. — Compound extremes in China, <em>Atmos. Ocean. Sci. Lett.</em>, 2025; Raymond et al., <em>Nat. Rev. Earth Environ.</em>, 2026.</li>
+    <li>Weyn et al. — Aurora 1.5, preprint, 9 Jul 2026 — <em>claim only, not peer-reviewed</em>.</li>
+  </ol></div>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  Rebuilt from the original proposal (sections a–e) and a sourced SOTA review researched 19–20 Nov 2026. Hardware figures: NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 96 GB GDDR7 spec / ~92 GB usable as briefed. Nothing on this page is a result: every performance number belongs to the cited model and its own evaluation, and the proposed programme's numbers do not exist yet — that is the work.
+</div></footer>
+
+<script>
+(function(){
+  "use strict";
+  /* ---- Model filter ---- */
+  var fbtns = document.querySelectorAll('.fbtn[data-filter]');
+  var rows = document.querySelectorAll('#modelBody tr');
+  fbtns.forEach(function(b){
+    b.addEventListener('click', function(){
+      fbtns.forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true');
+      var f = b.getAttribute('data-filter');
+      rows.forEach(function(r){
+        r.style.display = (f==='all' || r.getAttribute('data-kind')===f) ? '' : 'none';
+      });
+    });
+  });
+
+  /* ---- Work packages ---- */
+  var WPS = [
+    { title:"WP1 — LoRA / adapter fine-tuning of Aurora for extremes",
+      meta:"Core ML contribution · Highest priority · RQ1",
+      body:"Aurora was designed for this: Nature supplement §D.4 LoRA on backbone self-attention. Fine-tune Aurora-Small (113M, full FT) and Aurora 1.3B (LoRA) on 100–135°E, 5–40°N with extremes-weighted + quantile + twCRPS. Wessel body–tail trade-off: always report body metrics; mitigate with weighted training / linear pooling. Not a new global model.",
+      bullets:["Required controls: frozen Aurora; frozen Aurora + Gomez head; LoRA alone; LoRA + Gomez — else no attribution","Loss on/off, LoRA rank, subsample rate; body CRPS/RMSE reported with every twCRPS claim","Cases subsampled toward Cat 3–5 landfalls, records, >50 mm / HK black-rainstorm days"],
+      kill:"Kill / pivot: if CSI/ETS/twCRPS do not beat frozen and frozen+Gomez at matched body metrics, WP1 is a negative-result analysis and effort concentrates on WP2 heads." },
+    { title:"WP2 — IBTrACS intensity supervision + HK heavy-rain arm",
+      meta:"The intensity gap · RQ2 · Secondary nowcast",
+      body:"Phase 0 ships the linear Gomez head on frozen Aurora first (Gomez used Pangu/FourCastNet — Aurora transfer is a test). Escalate architecture only if needed. Secondary: 0–6 h heavy-precip / black-rainstorm (>70 mm/h) vs HKO + IMERG. FuXi-TC is the generative bar we cite, not clone. Diffusion/CorrDiff = stretch only.",
+      bullets:["Verify intensity on IBTrACS (CMA WNP); rain on IMERG + HKO — never ERA5 precip alone","Factorial with WP1 so loss vs head can be attributed","Optional generative stretch only if intensity gate fails after LoRA + heads"],
+      kill:"Kill / pivot: if intensity RMSE on held-out seasons does not move toward HRES at matched track error after the frozen+Gomez control, publish the gap honestly — the measured gap is a finding." },
+    { title:"WP3 — Calibration, decision value & optional stretch",
+      meta:"RQ3 · Cross-cutting · Venue polish",
+      body:"LoRA-ensemble (multi-adapter / IC perturbation / MC-dropout-class) — not diffusion sampling as core. Rank histograms, spread–skill, REV. Soft physics constraints only where well-posed. Compound pilot and tensor-network negative control are optional stretch.",
+      bullets:["Every deterministic result ships with a calibrated ensemble or an explicit why-not","Workshop first (NeurIPS/ICLR AI-for-Earth), then JAMES / GMD / AMS AI","Dashboard/notebooks replace the prototype app"],
+      kill:"Kill condition: compound + quantum + diffusion stretches drop first. Core paper is WP1+WP2+calibration." }
+  ];
+  var wpPanel = document.getElementById('wpPanel');
+  var wpBtns = document.querySelectorAll('.wpbtn');
+  function renderWP(i){
+    var w = WPS[i];
+    var lis = w.bullets.map(function(b){ return '<li>'+b+'</li>'; }).join('');
+    wpPanel.innerHTML = '<h4>'+w.title+'</h4><div class="meta">'+w.meta+'</div><p>'+w.body+'</p><ul>'+lis+'</ul><div class="kill"><strong>Discipline — </strong>'+w.kill+'</div>';
+    wpBtns.forEach(function(x,j){ x.setAttribute('aria-pressed', j===i ? 'true':'false'); });
+  }
+  wpBtns.forEach(function(b,i){ b.addEventListener('click', function(){ renderWP(i); }); });
+  renderWP(0);
+
+  /* ---- Compute chart (log scale) ---- */
+  var DATA = [
+    {name:"Pangu-Weather (per sub-model)", days:3072, cls:"no", label:"3,072 GPU-days · 192×V100 × 16 d"},
+    {name:"GraphCast", days:896, cls:"no", label:"~896 TPU-days · 32×TPUv4 × ~4 wk"},
+    {name:"Aurora (pretraining)", days:560, cls:"no", label:"~560 GPU-days · 32×A100 × ~2.5 wk"},
+    {name:"FourCastNet 3 (training)", days:512, cls:"no", label:"up to 1,024 GPUs · 512×A100 pretrain stage"},
+    {name:"FuXi (from scratch)", days:64, cls:"mid", label:"64 GPU-days · 8×A100 × 8 d — fine-tune instead"},
+    {name:"FourCastNet v1", days:43, cls:"mid", label:"~43 GPU-days · 64×A100 × 0.67 d"},
+    {name:"This proposal (core result)", days:20, cls:"yes", label:"~5–20 GPU-days · Aurora LoRA + intensity heads"},
+    {name:"ArchesWeather", days:5, cls:"yes", label:"~5 A100-days · solo template"},
+    {name:"Otter Weather", days:3, cls:"yes", label:"<3 A100-days, single GPU · under review — verify code"}
+  ];
+  var maxLog = Math.log10(3072);
+  var chart = document.getElementById('computeChart');
+  var html = '';
+  DATA.forEach(function(d){
+    var pct = Math.max(3, (Math.log10(d.days)/maxLog)*100);
+    html += '<div class="bar-row"><div>'+d.name+'</div><div class="bar-track"><div class="bar-fill '+d.cls+'" style="width:'+pct.toFixed(1)+'%"></div></div><div class="bar-val">'+d.label+'</div></div>';
+  });
+  chart.innerHTML = html;
+
+  /* ---- Decision log ---- */
+  var DECISIONS = [
+    { q:"Primary outcome", rec:"LOCKED: A — novel ML method (loss / adaptation / intensity supervision), climate as stress domain. Your Couloir/quantum pattern: find where it breaks, fix training, prove with numbers.",
+      opts:["A · Novel ML method paper, climate as stress domain","B · Climate-science paper, strong ML as the tool","C · Systems / quantum-adjacent paper on climate tensors"], pick:0 },
+    { q:"Extreme event", rec:"LOCKED: W Pacific TC intensity (primary) + heavy precipitation / HK black-rainstorms. Track is secondary — Aurora/GenCast largely solved it.",
+      opts:["Tropical cyclone intensity (+ track secondary)","Convective rainfall / flash flood only","Heatwaves","Compound extremes (stretch only)"], pick:0 },
+    { q:"Region", rec:"LOCKED: Western Pacific crop, 100–135°E, 5–40°N, Hong Kong as named verification site.",
+      opts:["Global at 0.25°","Western Pacific / SE Asia (HK-centred)","CONUS"], pick:1 },
+    { q:"Lead time & resolution", rec:"LOCKED: 0–72 h medium-range core; 0–6 h nowcasting secondary. Regional downscaling toward km-scale — not the thesis.",
+      opts:["Nowcasting only (minutes–hours)","Medium-range 0–72 h + nowcast arm","Subseasonal (weeks)"], pick:1 },
+    { q:"Where the Blackwell goes", rec:"LOCKED: Aurora-Small full FT and/or Aurora 1.3B LoRA + extremes/twCRPS loss. Not a new global model. Not a diffusion model from scratch.",
+      opts:["Fine-tune Aurora (LoRA / Aurora-Small FT)","Train global model from scratch","Diffusion / generative ensembles from scratch","Quantum-inspired / hybrid QC–ML"], pick:0 },
+    { q:"Quantum", rec:"LOCKED: classical-only. Tensor-network subgrid negative control at most — not the thesis. §7 stands.",
+      opts:["Classical only","Quantum-inspired (tensor networks, honestly labelled)","Hybrid QC–ML on a subproblem","Climate as a quantum-systems benchmark"], pick:0 },
+    { q:"Baseline bar", rec:"LOCKED: persistence/climatology + IFS HRES + IFS ENS/AIFS-ENS + GraphCast/Aurora, WeatherBench 2 + IBTrACS + HKO/IMERG, CSI/ETS/FSS/twCRPS/TC, held-out year, significance. Beating HRES on mean RMSE is the trap.",
+      opts:["Operational NWP only","A specific DL model only","Persistence / climatology only","All bars (§5) — same protocol"], pick:3 },
+    { q:"Deliverable & the app", rec:"LOCKED: arXiv draft + code/repro + evaluation dashboard/notebooks. Kill React Native. Solo PoW → mentor → NeurIPS/ICLR AI-for-Earth workshop → JAMES/GMD/AMS AI.",
+      opts:["Code + reproducibility artifacts only","arXiv draft + code/repro + eval notebooks","Keep the prototype app as a deliverable","Nature Communications first shot"], pick:1 }
+  ];
+  var decWrap = document.getElementById('decisions');
+  var state = DECISIONS.map(function(d){ return d.pick; });
+  DECISIONS.forEach(function(d, qi){
+    var card = document.createElement('div'); card.className = 'decision';
+    var h = document.createElement('h4');
+    h.innerHTML = '<span class="qn">Q'+(qi+1)+'</span>' + d.q;
+    var rec = document.createElement('p'); rec.className = 'rec'; rec.textContent = d.rec;
+    var opts = document.createElement('div'); opts.className = 'opts'; opts.setAttribute('role','group'); opts.setAttribute('aria-label', d.q);
+    d.opts.forEach(function(o, oi){
+      var b = document.createElement('button'); b.type='button'; b.className='opt'; b.textContent=o;
+      b.setAttribute('aria-pressed', state[qi]===oi ? 'true':'false');
+      b.addEventListener('click', function(){
+        state[qi]=oi;
+        opts.querySelectorAll('.opt').forEach(function(x,j){ x.setAttribute('aria-pressed', j===oi?'true':'false'); });
+        updateCount();
+      });
+      opts.appendChild(b);
+    });
+    card.appendChild(h); card.appendChild(rec); card.appendChild(opts);
+    decWrap.appendChild(card);
+  });
+  function changedCount(){ return state.filter(function(s,i){ return s!==DECISIONS[i].pick; }).length; }
+  function updateCount(){
+    var c = changedCount();
+    document.getElementById('decCount').innerHTML = c===0
+      ? '<strong>8 of 8</strong> set to the recommended defaults.'
+      : '<strong>'+(8-c)+' of 8</strong> at the recommended defaults · <strong>'+c+'</strong> changed by you.';
+  }
+  updateCount();
+  document.getElementById('copyDecisions').addEventListener('click', function(){
+    var lines = DECISIONS.map(function(d,i){ return 'Q'+(i+1)+' '+d.q+': '+d.opts[state[i]]; });
+    var text = 'Extreme Weather AI — decision log\n' + lines.join('\n');
+    var msg = document.getElementById('copyMsg');
+    function done(ok){ msg.textContent = ok ? 'Copied — paste it into your proposal notes.' : 'Copy failed in this view; your selections are still shown above.'; }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ done(false); });
+    } else { done(false); }
+  });
+})();
+</script>
+</body>
+</html>

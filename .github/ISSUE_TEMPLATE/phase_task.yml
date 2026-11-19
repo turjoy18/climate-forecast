@@ -1,0 +1,41 @@
+name: Phase task
+description: Work package / Phase 0–3 research task
+title: "[P?] "
+labels: ["phase"]
+body:
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      options:
+        - "0 — Harness & baselines"
+        - "1 — LoRA / FT (RQ1)"
+        - "2 — Intensity / rain (RQ2)"
+        - "3 — Calibration / write-up (RQ3)"
+        - Stretch only
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: One falsifiable outcome.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ] Reproducible command / notebook path documented
+        - [ ] Body + tail metrics reported (if scores change)
+        - [ ] Controls listed (frozen / frozen+Gomez / …)
+    validations:
+      required: true
+  - type: dropdown
+    id: blocks
+    attributes:
+      label: Blocks LoRA?
+      options: ["Yes — must finish before LoRA", "No"]
+    validations:
+      required: true

@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Tools / IDE
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.idea/
+.vscode/
+*.swp
+
+# Data & weights (never commit)
+data/
+datasets/
+*.nc
+*.grib
+*.grib2
+*.zarr/
+checkpoints/
+weights/
+*.pt
+*.pth
+*.ckpt
+wandb/
+mlruns/
+outputs/
+runs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+*.pem
+credentials.json
+secrets/

@@ -1,0 +1,26 @@
+name: Paper claim / protocol change
+description: Change to a claim, baseline, metric, or locked decision
+title: "[claim] "
+labels: ["paper", "protocol"]
+body:
+  - type: textarea
+    id: before
+    attributes:
+      label: Current locked text
+    validations:
+      required: true
+  - type: textarea
+    id: after
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Discipline
+      options:
+        - label: Does not sneak diffusion/quantum into the core
+        - label: Preserves attribution factorial
+        - label: Updates both MD and HTML proposal
+          required: true

@@ -1,0 +1,29 @@
+name: Bug
+description: Incorrect behaviour in harness, metrics, or training code
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+    validations:
+      required: true
+  - type: input
+    id: repro
+    attributes:
+      label: Repro command
+      placeholder: pytest -q / python -m …
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options: [blocks Phase 0, wrong scientific claim risk, nuisance]
+    validations:
+      required: true
