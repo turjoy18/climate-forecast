@@ -214,7 +214,7 @@
 <header class="hero"><div class="wrap">
   <div class="statusline">
     <span class="pill"><strong>Original title:</strong> Predicting Extreme Weather Events Using AI-Powered Climate Modeling</span>
-    <span class="pill hot">Status: decisions locked 20 Nov 2026 · Consensus-backed</span>
+    <span class="pill hot">Status: TCBench dual-protocol locked 20 Nov 2026</span>
     <span class="pill">Hardware: 1 × RTX PRO 6000 Blackwell · 92 GB usable (96 GB spec)</span>
   </div>
   <h1>Forecast the tail, <em>not the mean.</em></h1>
@@ -366,14 +366,15 @@
 <!-- 5 EVALUATION -->
 <section id="evaluation">
   <div class="sec-head"><span class="sec-num">05</span><h2>Evaluation: the baseline bar</h2></div>
-  <p class="sec-sub">WeatherBench 2 (Rasp et al., <em>JAMES</em> 2024) is the protocol floor — 2020 evaluation year, 00/12&nbsp;UTC initialisations, ERA5 truth, HRES deterministic and ENS probabilistic baselines — but its core protocol contains <strong>no</strong> CSI, ETS, FSS, threshold or cyclone metrics. An extremes paper must add them, plus the Zhao et al. binary-extremes extension (<em>Geosci. Model Dev.</em> 18:5781–5799, 2025; ROC skill score recommended as rarity-insensitive) and, for km-scale claims, HR-Extreme (ICLR 2025, from NOAA HRRR 3&nbsp;km data), where SOTA models' extreme-case errors are significantly larger than their overall errors.</p>
+  <p class="sec-sub"><strong>Dual protocol (locked).</strong> TC track+intensity → <strong>TCBench v3</strong> (Gomez et al., arXiv:2601.23268v3), eval year <strong>2023</strong>, Western Pacific SID subset from Table&nbsp;S2 (<strong>19</strong> SIDs, verified in the v3 HTML). Field extremes / FSS / twCRPS → WB2-style <strong>2020</strong>. Black-rain → HKO/IMERG. WeatherBench&nbsp;2 alone has no CSI/ETS/FSS/TC metrics — keep Zhao binary-extremes / FSS for fields; do <em>not</em> use WB2 2020 as the TC protocol. HF doi:10.57967/hf/8882 and Table&nbsp;S2 are verified from the paper; intensity-tier counts within the 19 SIDs are <strong>not</strong> locked until IBTrACS classification.</p>
+  <div class="callout"><p><strong>Anti-leak.</strong> TCBench train recommendation includes 2017–2020. If LoRA trains through 2020, a 2020 field test is in-sample. Exclude <strong>both 2020 and 2023</strong> from LoRA/FT training, or make the 2020 field eval <strong>frozen-base only</strong>. <strong>Small WP sample:</strong> 19 storms → bootstrap CIs; do not overclaim intensity point estimates. <strong>Phase&nbsp;0 step&nbsp;1:</strong> Aurora → TempestExtremes → <code>2023_AURORA.csv</code> (Aurora ∉ TCBench baselines). Pin v3: non-homogenised track scores; basin filtering added in R1.</p></div>
 
   <div class="metrics">
     <div class="metric"><b>CSI / ETS · POD / FAR</b><p>Binary exceedance at multiple thresholds (e.g. rain &gt;50 / 100&nbsp;mm, T &gt;95th percentile). CSI collapses for rare events — always pair with ETS / ROCSS.</p></div>
     <div class="metric"><b>FSS (neighbourhood)</b><p>Fractions Skill Score at several neighbourhood sizes. Essential for convective rain — the double-penalty problem punishes sharp, slightly displaced forecasts.</p></div>
     <div class="metric"><b>twCRPS (+ body)</b><p>Threshold-weighted CRPS for the tail. Wessel et al. (<em>MWR</em> 2025): twCRPS training improves extremes but can worsen the body — always report unweighted CRPS / mean RMSE alongside, and mitigate with weighted training or linear pooling.</p></div>
     <div class="metric"><b>Quantile / pinball score</b><p>Error at the 90th / 95th / 99th percentiles, reported per quantile — the direct antidote to MSE's regression to the mean. Never collapse to one weighted number.</p></div>
-    <div class="metric"><b>TC track + intensity</b><p>Track error (km), minimum-pressure and maximum-wind error, rapid-intensification detection — against IBTrACS, not ERA5.</p></div>
+    <div class="metric"><b>TC track + intensity</b><p>TCBench v3 metrics (DPE/CTE/ATE, wind/pressure RMSE/MAE, RI) on 2023 WP SIDs — IBTrACS via TCBench, not ERA5. Bootstrap CIs required.</p></div>
     <div class="metric"><b>Calibration + REV</b><p>Rank histogram, spread–skill ratio (≈1 = calibrated), reliability diagrams, and Relative Economic Value over cost/loss ratios. An uncalibrated ensemble is not a result.</p></div>
   </div>
 
@@ -448,7 +449,7 @@
   <div class="sec-head"><span class="sec-num">09</span><h2>Milestones &amp; deliverables</h2></div>
   <p class="sec-sub">Replacing the draft's deliverables (trained model, app, dataset, report) with the set a venue actually accepts. Durations are GPU-time-informed estimates for one researcher, not commitments.</p>
   <div class="timeline">
-    <div class="tl"><span class="when">Phase 0 · Weeks 1–3</span><h4>Harness → frozen baselines → Gomez floor</h4><p>ERA5/Anemoi day one. Reproduce frozen Aurora + HRES (and GraphCast if available) on the W Pacific crop. Then fit a <strong>linear</strong> Gomez-style intensity head on <strong>frozen</strong> Aurora — the cheap floor and attribution control. <em>Gate: baselines + frozen+Gomez reproduce before any LoRA.</em></p></div>
+    <div class="tl"><span class="when">Phase 0 · Weeks 1–3</span><h4>TCBench Aurora tracks → Gomez floor → field harness</h4><p>Pin <a href="https://github.com/tcbench/TCBench">tcbench/TCBench</a> (v3). Frozen Aurora → TempestExtremes → <code>2023_AURORA.csv</code>; score Table&nbsp;S2 WP SIDs. Linear Gomez head on frozen Aurora. WB2-style 2020 field harness with anti-leak window. <em>Gate: TCBench Aurora scorecard + frozen+Gomez before any LoRA.</em></p></div>
     <div class="tl"><span class="when">Phase 1 · Weeks 3–8</span><h4>WP1 — LoRA extremes adaptation (RQ1)</h4><p>Aurora-Small FT and Aurora-1.3B LoRA vs frozen and frozen+Gomez. Extremes-weighted + quantile + twCRPS; always report body + tail (Wessel). Ablations: loss on/off, LoRA rank, subsample rate.</p></div>
     <div class="tl"><span class="when">Phase 2 · Weeks 8–14</span><h4>WP2 — Intensity + heavy-rain arm (RQ2)</h4><p>Escalate Gomez head only if linear floor is insufficient; HKO/IMERG black-rainstorm arm. Optional generative/CorrDiff <strong>stretch only</strong> if intensity gate fails after LoRA + heads.</p></div>
     <div class="tl"><span class="when">Phase 3 · Weeks 14–18</span><h4>WP3 — Calibration, value, stretch (RQ3)</h4><p>LoRA-ensemble (not diffusion sampling as core); rank histograms, spread–skill, REV; compound pilot only if Phases 1–2 hold.</p></div>
@@ -475,6 +476,7 @@
     <li>Huang et al. — Aurora extremes predictability (pattern–amplitude divergence), <em>Atmosphere</em>, 2026. doi:10.3390/atmos17080716.</li>
     <li>Sahu, Sandeep &amp; Kodamana — MLWP TC dynamics/thermodynamics (intensity low-bias), <em>JGR: Machine Learning and Computation</em>, 2025.</li>
     <li>Gomez et al. — Global TC intensity via NeWM postprocessing, <em>Artif. Intell. Earth Syst.</em>, 2026. doi:10.1175/AIES-D-25-0073.1.</li>
+    <li>Gomez et al. — TCBench, arXiv:2601.23268<strong>v3</strong>, 2026 (preprint). HF <a href="https://doi.org/10.57967/hf/8882">doi:10.57967/hf/8882</a>; code <a href="https://doi.org/10.5281/zenodo.23801372">doi:10.5281/zenodo.23801372</a>; <a href="https://github.com/tcbench/TCBench">github.com/tcbench/TCBench</a>.</li>
     <li>Wessel et al. — Training postprocessing with twCRPS for extremes, <em>Mon. Wea. Rev.</em>, 2025.</li>
     <li>Kochkov et al. — NeuralGCM, <em>Nature</em> 632:1060–1066, 2024.</li>
     <li>Nguyen et al. — Stormer, NeurIPS 2024 (arXiv:2312.03876); ClimaX, ICML 2023.</li>
@@ -522,8 +524,8 @@
       kill:"Kill / pivot: if CSI/ETS/twCRPS do not beat frozen and frozen+Gomez at matched body metrics, WP1 is a negative-result analysis and effort concentrates on WP2 heads." },
     { title:"WP2 — IBTrACS intensity supervision + HK heavy-rain arm",
       meta:"The intensity gap · RQ2 · Secondary nowcast",
-      body:"Phase 0 ships the linear Gomez head on frozen Aurora first (Gomez used Pangu/FourCastNet — Aurora transfer is a test). Escalate architecture only if needed. Secondary: 0–6 h heavy-precip / black-rainstorm (>70 mm/h) vs HKO + IMERG. FuXi-TC is the generative bar we cite, not clone. Diffusion/CorrDiff = stretch only.",
-      bullets:["Verify intensity on IBTrACS (CMA WNP); rain on IMERG + HKO — never ERA5 precip alone","Factorial with WP1 so loss vs head can be attributed","Optional generative stretch only if intensity gate fails after LoRA + heads"],
+      body:"Phase 0: Aurora → TempestExtremes → 2023_AURORA.csv on TCBench WP SIDs, then linear Gomez head (TCBench postproc / AIES template — Aurora transfer is a test). Secondary: 0–6 h black-rain vs HKO + IMERG. FuXi-TC = generative bar we cite, not clone. Diffusion = stretch only.",
+      bullets:["TCBench schema + bootstrap CIs on 19-storm WP set","Factorial with WP1 so loss vs head can be attributed","Optional generative stretch only if intensity gate fails after LoRA + heads"],
       kill:"Kill / pivot: if intensity RMSE on held-out seasons does not move toward HRES at matched track error after the frozen+Gomez control, publish the gap honestly — the measured gap is a finding." },
     { title:"WP3 — Calibration, decision value & optional stretch",
       meta:"RQ3 · Cross-cutting · Venue polish",
@@ -577,8 +579,8 @@
       opts:["Fine-tune Aurora (LoRA / Aurora-Small FT)","Train global model from scratch","Diffusion / generative ensembles from scratch","Quantum-inspired / hybrid QC–ML"], pick:0 },
     { q:"Quantum", rec:"LOCKED: classical-only. Tensor-network subgrid negative control at most — not the thesis. §7 stands.",
       opts:["Classical only","Quantum-inspired (tensor networks, honestly labelled)","Hybrid QC–ML on a subproblem","Climate as a quantum-systems benchmark"], pick:0 },
-    { q:"Baseline bar", rec:"LOCKED: persistence/climatology + IFS HRES + IFS ENS/AIFS-ENS + GraphCast/Aurora, WeatherBench 2 + IBTrACS + HKO/IMERG, CSI/ETS/FSS/twCRPS/TC, held-out year, significance. Beating HRES on mean RMSE is the trap.",
-      opts:["Operational NWP only","A specific DL model only","Persistence / climatology only","All bars (§5) — same protocol"], pick:3 },
+    { q:"Baseline bar", rec:"LOCKED dual protocol: TCBench v3 2023 WP (19 Table-S2 SIDs) for TC; WB2-style 2020 for fields; HKO/IMERG black-rain. Anti-leak: exclude 2020+2023 from LoRA train (or frozen-only 2020 fields). Bootstrap CIs on WP intensity. Beating HRES on mean RMSE is the trap.",
+      opts:["Operational NWP only","TCBench-only global 2023","Custom 2020 IBTrACS tracker as TC protocol","Dual: TCBench 2023 TC + WB2 2020 fields + HKO"], pick:3 },
     { q:"Deliverable & the app", rec:"LOCKED: arXiv draft + code/repro + evaluation dashboard/notebooks. Kill React Native. Solo PoW → mentor → NeurIPS/ICLR AI-for-Earth workshop → JAMES/GMD/AMS AI.",
       opts:["Code + reproducibility artifacts only","arXiv draft + code/repro + eval notebooks","Keep the prototype app as a deliverable","Nature Communications first shot"], pick:1 }
   ];
