@@ -2,7 +2,7 @@
 
 **Working title:** Tail-First Fine-Tuning: Extremes-Weighted LoRA Adaptation of Aurora for Western Pacific Tropical-Cyclone Intensity and Heavy Precipitation
 
-**Status:** Decisions locked 20 Nov 2026 · Consensus-backed rebuild of the generic draft  
+**Status:** Decisions locked 20 Nov 2026 · TCBench dual-protocol lock (Option 1 for TC)  
 **Hardware:** 1 × RTX PRO 6000 Blackwell (~92 GB usable)  
 **Primary artefact:** see also `Extreme Weather AI Research Proposal.html`
 
@@ -26,7 +26,7 @@ Tail-First Fine-Tuning: Extremes-Weighted LoRA Adaptation of Aurora for Western 
 
 1. **Adapt** Aurora-Small (full FT) and/or Aurora 1.3B (LoRA) on domain `100–135°E, 5–40°N` with extremes-weighted + quantile + twCRPS losses on extreme-subsampled cases.
 2. **Close the intensity gap** with IBTrACS-supervised multi-task / postprocessing heads (track is secondary; intensity is primary). Secondary arm: 0–6 h heavy precip / HK black-rainstorm (`>70 mm/h`) exceedance.
-3. **Evaluate** under a pre-registered protocol: WeatherBench 2 + CSI/ETS, FSS, twCRPS, TC track+intensity, against persistence/climatology, IFS HRES, IFS ENS / AIFS-ENS, GraphCast/Aurora, on a held-out year with significance — verified on IBTrACS + HKO gauges / IMERG, not ERA5 precip alone.
+3. **Evaluate** under the **dual protocol** (below): TCBench v3 for TC track+intensity (2023 WP subset); WB2-style 2020 for field extremes; HKO/IMERG for black-rain — with anti-leak training windows and bootstrap CIs on the small WP sample.
 4. **Ship** arXiv draft + code/weights + evaluation notebooks/dashboard. **No** React Native app.
 
 ### b2) Key issues and problems
@@ -54,6 +54,27 @@ Tail-First Fine-Tuning: Extremes-Weighted LoRA Adaptation of Aurora for Western 
 
 Without (2), a win cannot be attributed to the loss vs the head.
 
+### Dual eval protocol (locked 20 Nov 2026 — Option 1 for TC)
+
+| Claim | Protocol | Year | Notes |
+|-------|----------|------|-------|
+| TC track + intensity | **TCBench v3** (Gomez et al., arXiv:2601.23268v3) | **2023** | WP SID subset from Table S2 (**19** SIDs, verified). TempestExtremes → TCBench schema. Aurora not in baselines — produce `2023_AURORA.csv`. |
+| Field extremes / FSS / twCRPS | WB2-style | **2020** | Grid scores only — not the TC protocol. |
+| 0–6 h black-rain | HKO gauges + IMERG | event set | Unchanged. |
+
+**Pin:** official repo [tcbench/TCBench](https://github.com/tcbench/TCBench); HF dataset doi:[10.57967/hf/8882](https://doi.org/10.57967/hf/8882); code doi:[10.5281/zenodo.23801372](https://doi.org/10.5281/zenodo.23801372). Preprint under revision: **non-homogenised** track scores (paper §1); basin filtering in R1 — cite **v3** explicitly. Do **not** clone `msgomez06/TCBench_Alpha`.
+
+**Option 2** (borrow tracker only, keep 2020 as TC eval) is a temporary implementation borrow while editing — **never** the frozen TC protocol.
+
+#### Caveat A — training-window leak
+TCBench recommends train 2017–2020 / val 2021–2022 / test 2023. A 2020 field test is **in-sample** if LoRA trains through 2020. **Required:** exclude **both 2020 and 2023** from LoRA/FT training (`LORA_HELD_OUT_YEARS`), **or** restrict the 2020 field eval to **frozen-base only**. Dual protocol must not quietly leak.
+
+#### Caveat B — small 2023 WP sample
+Table S2 lists **19** WP SIDs (verified). Intensity-tier splits (e.g. typhoon / super-typhoon counts) are **not locked** until classified from IBTrACS for those SIDs. Intensity stats will be noisy — report **bootstrap CIs**; do not overclaim from point estimates.
+
+#### Phase 0 step 1 (actual work)
+Not “clone and run notebook only.” Aurora ∉ TCBench baselines. Work is: run frozen Aurora → **TempestExtremes** track extraction → `track_matcher.py` → **`2023_AURORA.csv`** in TCBench schema (`sid, initial_time, valid_time, wind_max, pressure_min, lat, lon`), then evaluate WP SIDs. Pin TCBench commit used in the scorecard.
+
 ---
 
 ## c) Inter-disciplinary rationale
@@ -70,7 +91,7 @@ Classical-only. Quantum is **out of scope** (optional tensor-network negative co
 
 ### d1) Tasks by objective
 
-**Phase 0 order (before any LoRA):** (i) reproduce frozen Aurora + HRES baselines on the W Pacific crop → (ii) Gomez-style **linear** head on **frozen** Aurora as the cheap floor → (iii) only then LoRA / FT.
+**Phase 0 order (before any LoRA):** (i) pin TCBench v3; Aurora → TempestExtremes → `2023_AURORA.csv`; score WP Table-S2 SIDs (+ frozen HRES/TIGGE where available) → (ii) Gomez-style **linear** head on **frozen** Aurora (TCBench postproc scripts / AIES template) → (iii) WB2-style 2020 field harness (frozen-only until anti-leak training window set) → (iv) only then LoRA / FT with `LORA_HELD_OUT_YEARS = (2020, 2023)`.
 
 **WP1 — LoRA / Aurora-Small extremes adaptation (RQ1)**  
 - Data pipeline (Anemoi/Zarr; W Pacific crop) + harness that reproduces frozen GraphCast/Aurora + HRES **before** training.  
@@ -94,7 +115,9 @@ Classical-only. Quantum is **out of scope** (optional tensor-network negative co
 | Base models | Aurora-Small (113M, full FT); Aurora 1.3B (LoRA) |
 | Domain | 100–135°E, 5–40°N; leads 0–72 h core, 0–6 h secondary |
 | Losses | Extremes-weighted MSE + pinball (90/95/99) + twCRPS; report body CRPS/RMSE; Wessel weighted-train / linear-pool mitigation |
-| Data | ERA5 / IFS analysis init; IBTrACS; IMERG; HKO gauges |
+| Data | ERA5 / IFS analysis init; TCBench IBTrACS-aligned (HF doi:10.57967/hf/8882); IMERG; HKO gauges |
+| TC eval | TCBench v3, year 2023, 19 WP SIDs (Table S2); output `2023_AURORA.csv` |
+| Field eval | WB2-style year 2020; anti-leak: exclude 2020+2023 from LoRA train, or frozen-only 2020 |
 | Training | PyTorch, bf16, gradient checkpointing, 8-bit AdamW/Adafactor on 1 × Blackwell |
 | Serving / viz | Evaluation notebooks + lightweight dashboard (Plotly/Streamlit-class) — **not** React Native |
 | Out of scope | From-scratch global pretraining; from-scratch diffusion; quantum; product app |
@@ -110,9 +133,10 @@ Mean-trained AIWP wins WeatherBench-style averages and loses the tail and TC int
 5. Rasp et al. — WeatherBench 2, *JAMES*, 2024  
 6. Guo et al. — FuXi-TC (related generative SOTA), *npj Clim. Atmos. Sci.*, 2026. doi:10.1038/s41612-026-01501-w  
 7. Gomez et al. — NeWM TC intensity postprocessing, *AIES*, 2026. doi:10.1175/AIES-D-25-0073.1  
-8. Wessel et al. — twCRPS training for extremes, *MWR*, 2025  
-9. Huang et al. — Aurora extremes, pattern–amplitude divergence, *Atmosphere*, 2026  
-10. Tennie & Palmer — Quantum for weather/climate, *BAMS*, 2023 (why quantum is out)
+8. Gomez et al. — **TCBench**, arXiv:2601.23268**v3**, 2026 (preprint). HF doi:10.57967/hf/8882; code doi:10.5281/zenodo.23801372; repo https://github.com/tcbench/TCBench  
+9. Wessel et al. — twCRPS training for extremes, *MWR*, 2025  
+10. Huang et al. — Aurora extremes, pattern–amplitude divergence, *Atmosphere*, 2026  
+11. Tennie & Palmer — Quantum for weather/climate, *BAMS*, 2023 (why quantum is out)
 
 Full model table, compute honesty, and quantum blunt section: `Extreme Weather AI Research Proposal.html`.
 
@@ -122,7 +146,7 @@ Full model table, compute honesty, and quantum blunt section: `Extreme Weather A
 
 | Phase | When (indicative) | Gate / output |
 |-------|-------------------|---------------|
-| 0 | Weeks 1–3 | Harness + frozen Aurora/HRES reproduce; then frozen Aurora + linear Gomez head |
+| 0 | Weeks 1–3 | `2023_AURORA.csv` on TCBench WP SIDs; linear Gomez floor; WB2-2020 field harness (anti-leak) |
 | 1 | Weeks 3–8 | WP1 LoRA/FT ablations vs frozen and frozen+Gomez; RQ1 gate (body+tail) |
 | 2 | Weeks 8–14 | WP2 intensity / heavy-rain arm (escalate head only if needed); RQ2 gate |
 | 3 | Weeks 14–18 | Calibration, REV, notebooks; arXiv draft |
